@@ -1,4 +1,8 @@
-import { Text as DefaultText, View as DefaultView } from "react-native";
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  TextInput as DefaultTextInput,
+} from "react-native";
 
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
@@ -10,11 +14,8 @@ export function useThemeColor(
   const theme = useColorScheme();
   const colorFromProps = props[theme];
 
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
+  if (colorFromProps) return colorFromProps;
+  else return Colors[theme][colorName];
 }
 
 type ThemeProps = {
@@ -24,6 +25,7 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
+export type TextInputProps = ThemeProps & DefaultTextInput["props"];
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -40,4 +42,37 @@ export function View(props: ViewProps) {
   );
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+}
+
+export function TextInput(props: TextInputProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background"
+  );
+  const borderColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "border"
+  );
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const placeholder = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "placeholder"
+  );
+
+  const customStyle = {
+    backgroundColor,
+    borderColor,
+    color,
+    borderWidth: 1,
+    padding: 4,
+  };
+
+  return (
+    <DefaultTextInput
+      placeholderTextColor={placeholder}
+      style={[customStyle, style]}
+      {...otherProps}
+    />
+  );
 }
