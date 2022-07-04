@@ -6,21 +6,17 @@ import { Text, View, TextInput, useThemeColor } from "../components/Themed";
 import { RootTabScreenProps } from "../../types";
 import { LearningPath as ILearningPath } from "../core/paths/types";
 import { PathStorage } from "../core/paths/storage";
-import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
 
-const POMODORO_DAYS = {
-  MONDAY: 0,
-  TUESDAY: 1,
-  WEDNESDAY: 2,
-  THURSDAY: 3,
-  FRIDAY: 4,
-  SATURDAY: 5,
-  SUNDAY: 6,
-} as const;
-
-const DEFAULT_NEW_PATH = {
-  days: [true, true, true, true, true, true, true],
+const DEFAULT_NEW_PATH: Omit<ILearningPath, "id"> = {
+  days: {
+    monday: true,
+    tuesday: true,
+    wednesday: true,
+    thursday: true,
+    friday: true,
+    saturday: true,
+    sunday: true,
+  },
   name: "",
   nextSchedule: new Date(),
   pomodoros: 2,
@@ -54,8 +50,15 @@ export default function LearningPath({
     setNewPath(DEFAULT_NEW_PATH);
   };
 
-  const handlePressDay =
-    (day: typeof POMODORO_DAYS[keyof typeof POMODORO_DAYS]) => () => {};
+  const toggleDay = (day: keyof ILearningPath["days"]) => () => {
+    setNewPath({
+      ...newPath,
+      days: {
+        ...newPath.days,
+        [day]: !newPath.days[day],
+      },
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -97,34 +100,18 @@ export default function LearningPath({
             />
 
             <View style={{ flexDirection: "row" }}>
-              <DayButton
-                label="Mon"
-                onPress={() => setNewPath({ ...newPath, days: newPath.days })}
-              />
-              <DayButton
-                label="Tue"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
-              <DayButton
-                label="Wed"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
-              <DayButton
-                label="Thu"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
-              <DayButton
-                label="Fri"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
-              <DayButton
-                label="Sat"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
-              <DayButton
-                label="Sun"
-                onPress={() => setNewPath({ ...newPath, days: [] })}
-              />
+              {(
+                Object.keys(
+                  DEFAULT_NEW_PATH.days
+                ) as (keyof ILearningPath["days"])[]
+              ).map((item) => (
+                <DayButton
+                  key={item}
+                  label={item}
+                  onPress={toggleDay(item)}
+                  isSelected={newPath.days[item]}
+                />
+              ))}
             </View>
 
             <TextInput
@@ -313,10 +300,10 @@ function DayButton({
 
   return (
     <TouchableOpacity
-      style={{ padding: 4, borderRadius: 5, backgroundColor }}
+      style={{ padding: 12, borderRadius: 50, backgroundColor }}
       onPress={onPress}
     >
-      <Text>{label}</Text>
+      <Text>{label.substring(0, 3)}</Text>
     </TouchableOpacity>
   );
 }
