@@ -1,35 +1,70 @@
-import { StyleSheet } from "react-native";
+import { useState } from "react";
+import { TouchableOpacity } from "react-native";
 
-import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
+import * as TaskManager from "expo-task-manager";
 
-export default function TabTwoScreen() {
+const POMODORO_TASK_NAME = "pomodoro-task";
+
+TaskManager.defineTask(POMODORO_TASK_NAME, ({ data, error }) => {
+  console.log("hla");
+  if (error) {
+    // Error occurred - check `error.message` for more details.
+    return;
+  }
+  if (data) {
+    console.log("aquí");
+  }
+});
+
+export default function Pomodoro() {
+  const [pomodoroInterval, setPomodoroInterval] = useState<NodeJS.Timer | null>(
+    null
+  );
+  const [pomodoroTimer, setPomodoroTimer] = useState(1500);
+
+  const handleStart = () => {
+    console.log("1");
+
+    /* 
+    const interval = setInterval(() => {
+      setPomodoroTimer((prev) => prev - 1);
+    }, 1000);
+    setPomodoroInterval(interval); */
+  };
+
+  const handleEnd = () => {
+    if (pomodoroInterval) clearInterval(pomodoroInterval);
+    setPomodoroInterval(null);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text style={{ fontSize: 36 }}>
+        {giveCronometerFormat(pomodoroTimer)}
+      </Text>
+
+      <Button
+        title={pomodoroInterval ? "End" : "Start"}
+        onPress={() => (pomodoroInterval ? handleEnd() : handleStart())}
       />
-      <EditScreenInfo path="/screens/TabTwoScreen.tsx" />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});
+type ButtonProps = { title: string } & TouchableOpacity["props"];
+
+function Button({ title, ...props }: ButtonProps) {
+  return (
+    <TouchableOpacity style={{ padding: 12 }} {...props}>
+      <Text style={{ fontSize: 24 }}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const giveCronometerFormat = (sec: number) => {
+  const minutes = Math.trunc(sec / 60);
+  const seconds = sec % 60;
+
+  return `${minutes}:${seconds}`;
+};

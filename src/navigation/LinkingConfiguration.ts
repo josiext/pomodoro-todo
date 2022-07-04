@@ -20,7 +20,7 @@ const linking: LinkingOptions<RootStackParamList> = {
               TabOneScreen: "one",
             },
           },
-          TabTwo: {
+          Pomodoro: {
             screens: {
               TabTwoScreen: "two",
             },
