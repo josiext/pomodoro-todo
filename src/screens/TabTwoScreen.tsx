@@ -24,13 +24,10 @@ export default function Pomodoro() {
   const [pomodoroTimer, setPomodoroTimer] = useState(1500);
 
   const handleStart = () => {
-    console.log("1");
-
-    /* 
     const interval = setInterval(() => {
       setPomodoroTimer((prev) => prev - 1);
     }, 1000);
-    setPomodoroInterval(interval); */
+    setPomodoroInterval(interval);
   };
 
   const handleEnd = () => {
