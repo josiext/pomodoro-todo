@@ -6,16 +6,18 @@ import * as TaskManager from "expo-task-manager";
 
 const POMODORO_TASK_NAME = "pomodoro-task";
 
-TaskManager.defineTask(POMODORO_TASK_NAME, ({ data, error }) => {
+TaskManager.defineTask(POMODORO_TASK_NAME, ({ data, error, executionInfo }) => {
   console.log("hla");
+  console.log(executionInfo);
   if (error) {
-    // Error occurred - check `error.message` for more details.
     return;
   }
   if (data) {
     console.log("aquí");
   }
 });
+
+console.log("qui", TaskManager.isTaskDefined(POMODORO_TASK_NAME));
 
 export default function Pomodoro() {
   const [pomodoroInterval, setPomodoroInterval] = useState<NodeJS.Timer | null>(
@@ -63,5 +65,7 @@ const giveCronometerFormat = (sec: number) => {
   const minutes = Math.trunc(sec / 60);
   const seconds = sec % 60;
 
-  return `${minutes}:${seconds}`;
+  return `${minutes < 10 ? "0" + minutes : minutes}:${
+    seconds < 10 ? "0" + seconds : seconds
+  }`;
 };
